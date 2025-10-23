@@ -89,35 +89,6 @@ func getTrainTrip(trip_id string) ([]TrainInfo, error) {
 	return trainTrips, nil
 }
 
-func getTrainList() ([]TrainInfo, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	result, err := Db.QueryContext(ctx, `
-	SELECT * FROM train_trip
-	`)
-	if err != nil {
-		log.Println(err.Error())
-		return nil, err
-	}
-	defer result.Close()
-	trains := make([]TrainInfo, 0)
-	for result.Next() {
-		var traininfo TrainInfo
-		result.Scan(&traininfo.TripID,
-			&traininfo.TrainNo,
-			&traininfo.TrainTypeNameTh,
-			&traininfo.OriginStationNo,
-			&traininfo.DestStationNo,
-			&traininfo.TripDate,
-			&traininfo.OriginTime,
-			&traininfo.DestTime,
-			&traininfo.TotalDistance)
-
-		trains = append(trains, traininfo)
-	}
-	return trains, nil
-}
-
 func handleTrains(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
